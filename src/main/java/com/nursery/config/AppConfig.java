@@ -1,13 +1,7 @@
 package com.nursery.config;
 
-import com.nursery.repository.CustomerRepositoryImpl;
-import com.nursery.repository.ICustomerRepository;
-import com.nursery.repository.IPlantRepository;
-import com.nursery.repository.PlantRepositoryImpl;
-import com.nursery.service.CustomerServiceImpl;
-import com.nursery.service.ICustomerService;
-import com.nursery.service.IPlantService;
-import com.nursery.service.PlantServiceImpl;
+import com.nursery.repository.*;
+import com.nursery.service.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -37,5 +31,37 @@ public class AppConfig {
     @Bean
     public IPlantService plantService(IPlantRepository plantRepository) {
         return new PlantServiceImpl(plantRepository);
+    }
+
+    @Bean
+    public ISeedRepository seedRepository() {
+        return new SeedRepositoryImpl();
+    }
+
+    @Bean
+    public ISeedService seedService(ISeedRepository seedRepository) {
+        return new SeedServiceImpl(seedRepository);
+    }
+
+    @Bean
+    public IPlanterRepository planterRepository() {
+        return new PlanterRepositoryImpl();
+    }
+
+    @Bean
+    public IPlanterService planterService(IPlanterRepository planterRepository) {
+        return new PlanterServiceImpl(planterRepository);
+    }
+
+    @Bean
+    public IOrderRepository orderRepository() {
+        return new OrderRepositoryImpl();
+    }
+
+    @Bean
+    public IOrderService orderService(IOrderRepository orderRepository,
+                                      IPlantRepository plantRepository,
+                                      ISeedRepository seedRepository) {
+        return new OrderServiceImpl(orderRepository, plantRepository, seedRepository);
     }
 }

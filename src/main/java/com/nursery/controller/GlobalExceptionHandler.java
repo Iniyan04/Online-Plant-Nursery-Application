@@ -40,6 +40,36 @@ public class GlobalExceptionHandler {
         return buildResponse(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
+    @ExceptionHandler(InvalidSeedDataException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidSeedData(InvalidSeedDataException ex) {
+        return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(SeedNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleSeedNotFound(SeedNotFoundException ex) {
+        return buildResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(InvalidPlanterDataException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidPlanterData(InvalidPlanterDataException ex) {
+        return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(PlanterNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handlePlanterNotFound(PlanterNotFoundException ex) {
+        return buildResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(InvalidOrderDataException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidOrderData(InvalidOrderDataException ex) {
+        return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(OrderNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleOrderNotFound(OrderNotFoundException ex) {
+        return buildResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
     private ResponseEntity<ErrorResponse> buildResponse(HttpStatus status, String message) {
         ErrorResponse body = new ErrorResponse(status.value(), status.getReasonPhrase(), message);
         return ResponseEntity.status(status).body(body);

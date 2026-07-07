@@ -14,4 +14,8 @@ public interface IOrderService {
     Order viewOrder(int orderId);
 
     List<Order> viewAllOrders();
+
+    Order orderPlant(int plantId, int quantity, String transactionMode);
+
+    Order orderSeed(int seedId, int quantity, String transactionMode);
 }

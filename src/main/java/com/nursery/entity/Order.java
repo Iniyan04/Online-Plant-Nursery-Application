@@ -16,9 +16,17 @@ public class Order {
     private int quantity;
     private double totalCost;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "planter_id")
     private Planter planters;
+
+    @ManyToOne
+    @JoinColumn(name = "plant_id")
+    private Plant plant;
+
+    @ManyToOne
+    @JoinColumn(name = "seed_id")
+    private Seed seed;
 
     public Order() {
     }
@@ -77,5 +85,21 @@ public class Order {
 
     public void setPlanters(Planter planters) {
         this.planters = planters;
+    }
+
+    public Plant getPlant() {
+        return plant;
+    }
+
+    public void setPlant(Plant plant) {
+        this.plant = plant;
+    }
+
+    public Seed getSeed() {
+        return seed;
+    }
+
+    public void setSeed(Seed seed) {
+        this.seed = seed;
     }
 }
