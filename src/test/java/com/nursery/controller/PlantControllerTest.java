@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nursery.entity.Plant;
 import com.nursery.exception.InvalidPlantDataException;
 import com.nursery.exception.PlantNotFoundException;
+import com.nursery.service.IAdminService;
 import com.nursery.service.IPlantService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -38,6 +39,9 @@ class PlantControllerTest {
 
     @MockBean
     private IPlantService plantService;
+
+    @MockBean
+    private IAdminService adminService;
 
     private Plant samplePlant() {
         Plant plant = new Plant(30, "Medium", "Tulsi", "Summer", "Medicinal",
@@ -92,6 +96,8 @@ class PlantControllerTest {
         when(plantService.addPlant(any(Plant.class))).thenReturn(plant);
 
         mockMvc.perform(post("/api/plants")
+                        .header("adminUsername", "admin")
+                        .header("adminPassword", "admin123")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(plant)))
                 .andExpect(status().isCreated())
@@ -107,6 +113,8 @@ class PlantControllerTest {
         Plant invalidPlant = new Plant();
 
         mockMvc.perform(post("/api/plants")
+                        .header("adminUsername", "admin")
+                        .header("adminPassword", "admin123")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidPlant)))
                 .andExpect(status().isBadRequest());
@@ -119,6 +127,8 @@ class PlantControllerTest {
         when(plantService.updatePlant(any(Plant.class))).thenReturn(plant);
 
         mockMvc.perform(put("/api/plants/1")
+                        .header("adminUsername", "admin")
+                        .header("adminPassword", "admin123")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(plant)))
                 .andExpect(status().isOk())
@@ -134,6 +144,8 @@ class PlantControllerTest {
         Plant plant = samplePlant();
 
         mockMvc.perform(put("/api/plants/999")
+                        .header("adminUsername", "admin")
+                        .header("adminPassword", "admin123")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(plant)))
                 .andExpect(status().isNotFound());
@@ -144,7 +156,9 @@ class PlantControllerTest {
     void deletePlant_existingPlant_returns204() throws Exception {
         when(plantService.deletePlant(any(Plant.class))).thenReturn(samplePlant());
 
-        mockMvc.perform(delete("/api/plants/1"))
+        mockMvc.perform(delete("/api/plants/1")
+                        .header("adminUsername", "admin")
+                        .header("adminPassword", "admin123"))
                 .andExpect(status().isNoContent());
     }
 
@@ -154,7 +168,9 @@ class PlantControllerTest {
         when(plantService.deletePlant(any(Plant.class)))
                 .thenThrow(new PlantNotFoundException("No plant found with ID 999"));
 
-        mockMvc.perform(delete("/api/plants/999"))
+        mockMvc.perform(delete("/api/plants/999")
+                        .header("adminUsername", "admin")
+                        .header("adminPassword", "admin123"))
                 .andExpect(status().isNotFound());
     }
 }

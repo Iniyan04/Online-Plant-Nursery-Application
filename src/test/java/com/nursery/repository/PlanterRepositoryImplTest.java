@@ -97,4 +97,15 @@ class PlanterRepositoryImplTest {
         Planter result = planterRepository.viewPlanter(idToDelete);
         assertNull(result);
     }
+
+    @Test
+    @DisplayName("countPlanters returns the total number of planters in the database")
+    void countPlanters_returnsTotalPlanters() {
+        planterRepository.addPlanter(new Planter(10f, 3, 2, 1, "Square", 10, 100, null, null));
+        planterRepository.addPlanter(new Planter(12f, 5, 3, 2, "Round", 15, 200, null, null));
+
+        long totalPlanters = planterRepository.countPlanters();
+
+        assertEquals(2, totalPlanters);
+    }
 }

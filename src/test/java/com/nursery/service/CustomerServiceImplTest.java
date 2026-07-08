@@ -209,4 +209,65 @@ class CustomerServiceImplTest {
 
         verify(customerRepository, never()).addCustomer(any());
     }
+
+    @Test
+    @DisplayName("updateCustomer updates successfully when data is valid and username is not taken")
+    void updateCustomer_validData_returnsUpdatedCustomer() {
+        Customer existing = validNewCustomer();
+        existing.setCustomerId(1);
+        when(customerRepository.viewCustomer(1)).thenReturn(existing);
+        when(customerRepository.findByUsername("janedoe")).thenReturn(existing);
+        when(customerRepository.updateCustomer(any(Customer.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        Customer result = customerService.updateCustomer(existing);
+
+        assertNotNull(result);
+        assertEquals(1, result.getCustomerId());
+        verify(customerRepository).updateCustomer(existing);
+    }
+
+    @Test
+    @DisplayName("updateCustomer throws DuplicateUsernameException when username belongs to another customer")
+    void updateCustomer_duplicateUsername_throwsException() {
+        Customer existing = validNewCustomer();
+        existing.setCustomerId(1);
+        Customer duplicate = validNewCustomer();
+        duplicate.setCustomerId(2);
+        when(customerRepository.viewCustomer(1)).thenReturn(existing);
+        when(customerRepository.findByUsername("janedoe")).thenReturn(duplicate);
+
+        assertThrows(DuplicateUsernameException.class, () -> customerService.updateCustomer(existing));
+        verify(customerRepository, never()).updateCustomer(any());
+    }
+
+    @Test
+    @DisplayName("deleteCustomer throws InvalidCustomerDataException when customer does not exist")
+    void deleteCustomer_missingCustomer_throwsException() {
+        Customer customer = new Customer();
+        customer.setCustomerId(999);
+        when(customerRepository.viewCustomer(999)).thenReturn(null);
+
+        assertThrows(InvalidCustomerDataException.class, () -> customerService.deleteCustomer(customer));
+        verify(customerRepository, never()).deleteCustomer(any());
+    }
+
+    @Test
+    @DisplayName("viewCustomer by username returns customer when username exists")
+    void viewCustomerByUsername_existingUsername_returnsCustomer() {
+        Customer customer = validNewCustomer();
+        when(customerRepository.findByUsername("janedoe")).thenReturn(customer);
+
+        Customer result = customerService.viewCustomer("janedoe");
+
+        assertNotNull(result);
+        assertEquals("janedoe", result.getUsername());
+    }
+
+    @Test
+    @DisplayName("viewCustomer by username throws InvalidCustomerDataException when username does not exist")
+    void viewCustomerByUsername_missingUsername_throwsException() {
+        when(customerRepository.findByUsername("missing")).thenReturn(null);
+
+        assertThrows(InvalidCustomerDataException.class, () -> customerService.viewCustomer("missing"));
+    }
 }

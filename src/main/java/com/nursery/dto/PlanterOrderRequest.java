@@ -1,21 +1,21 @@
 package com.nursery.dto;
 
 /**
- * Request body for US-011: Customer orders plants.
+ * Request body for US-013: Customer orders planters.
  */
-public class PlantOrderRequest {
+public class PlanterOrderRequest {
 
     private int customerId;
-    private int plantId;
+    private int planterId;
     private int quantity;
     private String transactionMode;
 
-    public PlantOrderRequest() {
+    public PlanterOrderRequest() {
     }
 
-    public PlantOrderRequest(int customerId, int plantId, int quantity, String transactionMode) {
+    public PlanterOrderRequest(int customerId, int planterId, int quantity, String transactionMode) {
         this.customerId = customerId;
-        this.plantId = plantId;
+        this.planterId = planterId;
         this.quantity = quantity;
         this.transactionMode = transactionMode;
     }
@@ -28,12 +28,12 @@ public class PlantOrderRequest {
         this.customerId = customerId;
     }
 
-    public int getPlantId() {
-        return plantId;
+    public int getPlanterId() {
+        return planterId;
     }
 
-    public void setPlantId(int plantId) {
-        this.plantId = plantId;
+    public void setPlanterId(int planterId) {
+        this.planterId = planterId;
     }
 
     public int getQuantity() {

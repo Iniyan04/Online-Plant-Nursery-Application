@@ -1,6 +1,7 @@
 package com.nursery.controller;
 
 import com.nursery.entity.Plant;
+import com.nursery.service.IAdminService;
 import com.nursery.service.IPlantService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +18,11 @@ import java.util.List;
 public class PlantController {
 
     private final IPlantService plantService;
+    private final IAdminService adminService;
 
-    public PlantController(IPlantService plantService) {
+    public PlantController(IPlantService plantService, IAdminService adminService) {
         this.plantService = plantService;
+        this.adminService = adminService;
     }
 
     /**
@@ -58,7 +61,10 @@ public class PlantController {
      * POST /api/plants
      */
     @PostMapping
-    public ResponseEntity<Plant> addPlant(@RequestBody Plant plant) {
+    public ResponseEntity<Plant> addPlant(@RequestHeader("adminUsername") String adminUsername,
+                                          @RequestHeader("adminPassword") String adminPassword,
+                                          @RequestBody Plant plant) {
+        authorizeAdmin(adminUsername, adminPassword);
         Plant saved = plantService.addPlant(plant);
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
@@ -68,7 +74,11 @@ public class PlantController {
      * PUT /api/plants/{id}
      */
     @PutMapping("/{id}")
-    public ResponseEntity<Plant> updatePlant(@PathVariable int id, @RequestBody Plant plant) {
+    public ResponseEntity<Plant> updatePlant(@RequestHeader("adminUsername") String adminUsername,
+                                             @RequestHeader("adminPassword") String adminPassword,
+                                             @PathVariable int id,
+                                             @RequestBody Plant plant) {
+        authorizeAdmin(adminUsername, adminPassword);
         plant.setPlantId(id);
         Plant updated = plantService.updatePlant(plant);
         return ResponseEntity.ok(updated);
@@ -79,10 +89,17 @@ public class PlantController {
      * DELETE /api/plants/{id}
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePlant(@PathVariable int id) {
+    public ResponseEntity<Void> deletePlant(@RequestHeader("adminUsername") String adminUsername,
+                                            @RequestHeader("adminPassword") String adminPassword,
+                                            @PathVariable int id) {
+        authorizeAdmin(adminUsername, adminPassword);
         Plant plant = new Plant();
         plant.setPlantId(id);
         plantService.deletePlant(plant);
         return ResponseEntity.noContent().build();
+    }
+
+    private void authorizeAdmin(String adminUsername, String adminPassword) {
+        adminService.validateAdmin(adminUsername, adminPassword);
     }
 }

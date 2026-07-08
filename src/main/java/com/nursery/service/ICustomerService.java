@@ -15,6 +15,8 @@ public interface ICustomerService {
 
     List<Customer> viewAllCustomers();
 
+    Customer viewCustomer(String username);
+
     /**
      * Validates login credentials.
      *

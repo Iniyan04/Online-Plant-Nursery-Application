@@ -3,10 +3,12 @@ package com.nursery.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nursery.dto.LoginRequest;
 import com.nursery.dto.RegisterRequest;
+import com.nursery.dto.UpdateCustomerRequest;
 import com.nursery.entity.Address;
 import com.nursery.entity.Customer;
 import com.nursery.exception.DuplicateUsernameException;
 import com.nursery.exception.InvalidCredentialsException;
+import com.nursery.service.IAdminService;
 import com.nursery.service.ICustomerService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,7 +21,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
@@ -39,6 +44,9 @@ class CustomerControllerTest {
 
     @MockBean
     private ICustomerService customerService;
+
+    @MockBean
+    private IAdminService adminService;
 
     @Test
     @DisplayName("POST /api/customers/login returns 200 and customer data on valid credentials")
@@ -119,5 +127,89 @@ class CustomerControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isConflict());
+    }
+
+    @Test
+    @DisplayName("GET /api/customers returns 200 with all customers for valid admin")
+    void viewAllCustomers_validAdmin_returns200() throws Exception {
+        Address address = new Address("12", "Green Park", "Bengaluru", "Karnataka", 560001);
+        Customer customer = new Customer("Jane Doe", "jane@example.com", "janedoe", "secret123", address);
+        customer.setCustomerId(1);
+        when(customerService.viewAllCustomers()).thenReturn(java.util.List.of(customer));
+
+        mockMvc.perform(get("/api/customers")
+                        .header("adminUsername", "admin")
+                        .header("adminPassword", "admin123"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].customerId").value(1))
+                .andExpect(jsonPath("$[0].username").value("janedoe"));
+    }
+
+    @Test
+    @DisplayName("GET /api/customers/{id} returns 200 for valid admin")
+    void viewCustomerById_validAdmin_returns200() throws Exception {
+        Address address = new Address("12", "Green Park", "Bengaluru", "Karnataka", 560001);
+        Customer customer = new Customer("Jane Doe", "jane@example.com", "janedoe", "secret123", address);
+        customer.setCustomerId(1);
+        when(customerService.viewCustomer(1)).thenReturn(customer);
+
+        mockMvc.perform(get("/api/customers/1")
+                        .header("adminUsername", "admin")
+                        .header("adminPassword", "admin123"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.customerId").value(1));
+    }
+
+    @Test
+    @DisplayName("GET /api/customers/search/{username} returns 200 for valid admin")
+    void viewCustomerByUsername_validAdmin_returns200() throws Exception {
+        Address address = new Address("12", "Green Park", "Bengaluru", "Karnataka", 560001);
+        Customer customer = new Customer("Jane Doe", "jane@example.com", "janedoe", "secret123", address);
+        customer.setCustomerId(1);
+        when(customerService.viewCustomer("janedoe")).thenReturn(customer);
+
+        mockMvc.perform(get("/api/customers/search/janedoe")
+                        .header("adminUsername", "admin")
+                        .header("adminPassword", "admin123"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.username").value("janedoe"));
+    }
+
+    @Test
+    @DisplayName("PUT /api/customers/{id} returns 200 when update succeeds for valid admin")
+    void updateCustomer_validAdmin_returns200() throws Exception {
+        Address address = new Address("12", "Green Park", "Bengaluru", "Karnataka", 560001);
+        Customer existing = new Customer("Jane Doe", "jane@example.com", "janedoe", "secret123", address);
+        existing.setCustomerId(1);
+        Customer updated = new Customer("Jane Updated", "updated@example.com", "janedoe", "secret123", address);
+        updated.setCustomerId(1);
+        when(customerService.viewCustomer(1)).thenReturn(existing);
+        when(customerService.updateCustomer(any(Customer.class))).thenReturn(updated);
+
+        UpdateCustomerRequest request = new UpdateCustomerRequest();
+        request.setCustomerName("Jane Updated");
+        request.setCustomerEmail("updated@example.com");
+        request.setUsername("janedoe");
+
+        mockMvc.perform(put("/api/customers/1")
+                        .header("adminUsername", "admin")
+                        .header("adminPassword", "admin123")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.customerName").value("Jane Updated"));
+    }
+
+    @Test
+    @DisplayName("DELETE /api/customers/{id} returns 204 when delete succeeds for valid admin")
+    void deleteCustomer_validAdmin_returns204() throws Exception {
+        Customer customer = new Customer();
+        customer.setCustomerId(1);
+        when(customerService.deleteCustomer(any(Customer.class))).thenReturn(customer);
+
+        mockMvc.perform(delete("/api/customers/1")
+                        .header("adminUsername", "admin")
+                        .header("adminPassword", "admin123"))
+                .andExpect(status().isNoContent());
     }
 }

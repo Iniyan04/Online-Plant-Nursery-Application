@@ -105,4 +105,15 @@ public class CustomerRepositoryImpl implements ICustomerRepository {
             em.close();
         }
     }
+
+    @Override
+    public long countCustomers() {
+        EntityManager em = JPAUtil.getEntityManagerFactory().createEntityManager();
+        try {
+            return em.createQuery("SELECT COUNT(c) FROM Customer c", Long.class)
+                    .getSingleResult();
+        } finally {
+            em.close();
+        }
+    }
 }

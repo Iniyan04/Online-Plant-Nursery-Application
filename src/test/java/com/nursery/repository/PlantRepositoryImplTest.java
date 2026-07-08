@@ -144,4 +144,15 @@ class PlantRepositoryImplTest {
         Plant result = plantRepository.viewPlant(idToDelete);
         assertNull(result, "Plant should no longer exist after deletion");
     }
+
+    @Test
+    @DisplayName("countPlants returns the total number of plants in the database")
+    void countPlants_returnsTotalPlants() {
+        seedPlant("Rose", "Flower");
+        seedPlant("Tulsi", "Herb");
+
+        long totalPlants = plantRepository.countPlants();
+
+        assertEquals(2, totalPlants);
+    }
 }

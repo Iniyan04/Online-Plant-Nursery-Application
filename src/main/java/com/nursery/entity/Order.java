@@ -15,6 +15,7 @@ public class Order {
     private String transactionMode;
     private int quantity;
     private double totalCost;
+    private String orderStatus;
 
     @ManyToOne
     @JoinColumn(name = "planter_id")
@@ -27,6 +28,10 @@ public class Order {
     @ManyToOne
     @JoinColumn(name = "seed_id")
     private Seed seed;
+
+    @ManyToOne
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
 
     public Order() {
     }
@@ -79,6 +84,14 @@ public class Order {
         this.totalCost = totalCost;
     }
 
+    public String getOrderStatus() {
+        return orderStatus;
+    }
+
+    public void setOrderStatus(String orderStatus) {
+        this.orderStatus = orderStatus;
+    }
+
     public Planter getPlanters() {
         return planters;
     }
@@ -101,5 +114,13 @@ public class Order {
 
     public void setSeed(Seed seed) {
         this.seed = seed;
+    }
+
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
     }
 }

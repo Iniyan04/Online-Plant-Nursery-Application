@@ -11,11 +11,17 @@ public interface IOrderService {
 
     Order deleteOrder(int orderId);
 
+    Order cancelOrder(int customerId, int orderId);
+
     Order viewOrder(int orderId);
 
     List<Order> viewAllOrders();
 
-    Order orderPlant(int plantId, int quantity, String transactionMode);
+    List<Order> viewOrdersByCustomer(int customerId);
 
-    Order orderSeed(int seedId, int quantity, String transactionMode);
+    Order orderPlant(int customerId, int plantId, int quantity, String transactionMode);
+
+    Order orderSeed(int customerId, int seedId, int quantity, String transactionMode);
+
+    Order orderPlanter(int customerId, int planterId, int quantity, String transactionMode);
 }

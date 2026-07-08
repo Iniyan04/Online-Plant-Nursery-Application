@@ -1,6 +1,7 @@
 package com.nursery.controller;
 
 import com.nursery.entity.Planter;
+import com.nursery.service.IAdminService;
 import com.nursery.service.IPlanterService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,9 +17,11 @@ import java.util.List;
 public class PlanterController {
 
     private final IPlanterService planterService;
+    private final IAdminService adminService;
 
-    public PlanterController(IPlanterService planterService) {
+    public PlanterController(IPlanterService planterService, IAdminService adminService) {
         this.planterService = planterService;
+        this.adminService = adminService;
     }
 
     /**
@@ -59,7 +62,10 @@ public class PlanterController {
      * POST /api/planters
      */
     @PostMapping
-    public ResponseEntity<Planter> addPlanter(@RequestBody Planter planter) {
+    public ResponseEntity<Planter> addPlanter(@RequestHeader("adminUsername") String adminUsername,
+                                              @RequestHeader("adminPassword") String adminPassword,
+                                              @RequestBody Planter planter) {
+        authorizeAdmin(adminUsername, adminPassword);
         Planter saved = planterService.addPlanter(planter);
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
@@ -69,7 +75,11 @@ public class PlanterController {
      * PUT /api/planters/{id}
      */
     @PutMapping("/{id}")
-    public ResponseEntity<Planter> updatePlanter(@PathVariable int id, @RequestBody Planter planter) {
+    public ResponseEntity<Planter> updatePlanter(@RequestHeader("adminUsername") String adminUsername,
+                                                 @RequestHeader("adminPassword") String adminPassword,
+                                                 @PathVariable int id,
+                                                 @RequestBody Planter planter) {
+        authorizeAdmin(adminUsername, adminPassword);
         planter.setPlanterId(id);
         Planter updated = planterService.updatePlanter(planter);
         return ResponseEntity.ok(updated);
@@ -80,10 +90,17 @@ public class PlanterController {
      * DELETE /api/planters/{id}
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePlanter(@PathVariable int id) {
+    public ResponseEntity<Void> deletePlanter(@RequestHeader("adminUsername") String adminUsername,
+                                              @RequestHeader("adminPassword") String adminPassword,
+                                              @PathVariable int id) {
+        authorizeAdmin(adminUsername, adminPassword);
         Planter planter = new Planter();
         planter.setPlanterId(id);
         planterService.deletePlanter(planter);
         return ResponseEntity.noContent().build();
+    }
+
+    private void authorizeAdmin(String adminUsername, String adminPassword) {
+        adminService.validateAdmin(adminUsername, adminPassword);
     }
 }

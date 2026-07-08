@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nursery.entity.Seed;
 import com.nursery.exception.InvalidSeedDataException;
 import com.nursery.exception.SeedNotFoundException;
+import com.nursery.service.IAdminService;
 import com.nursery.service.ISeedService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,6 +33,9 @@ class SeedControllerTest {
 
     @MockBean
     private ISeedService seedService;
+
+    @MockBean
+    private IAdminService adminService;
 
     private Seed sampleSeed() {
         Seed seed = new Seed("Basil", "Summer", "Daily", "Easy", "Warm",
@@ -66,6 +70,8 @@ class SeedControllerTest {
         when(seedService.addSeed(any(Seed.class))).thenReturn(seed);
 
         mockMvc.perform(post("/api/seeds")
+                        .header("adminUsername", "admin")
+                        .header("adminPassword", "admin123")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(seed)))
                 .andExpect(status().isCreated())
@@ -79,6 +85,8 @@ class SeedControllerTest {
                 .thenThrow(new InvalidSeedDataException("Seed common name must not be empty"));
 
         mockMvc.perform(post("/api/seeds")
+                        .header("adminUsername", "admin")
+                        .header("adminPassword", "admin123")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(new Seed())))
                 .andExpect(status().isBadRequest());
@@ -89,7 +97,9 @@ class SeedControllerTest {
     void deleteSeed_existingSeed_returns204() throws Exception {
         when(seedService.deleteSeed(any(Seed.class))).thenReturn(sampleSeed());
 
-        mockMvc.perform(delete("/api/seeds/1"))
+        mockMvc.perform(delete("/api/seeds/1")
+                        .header("adminUsername", "admin")
+                        .header("adminPassword", "admin123"))
                 .andExpect(status().isNoContent());
     }
 }

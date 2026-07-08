@@ -100,4 +100,15 @@ public class SeedRepositoryImpl implements ISeedRepository {
             em.close();
         }
     }
+
+    @Override
+    public long countSeeds() {
+        EntityManager em = JPAUtil.getEntityManagerFactory().createEntityManager();
+        try {
+            return em.createQuery("SELECT COUNT(s) FROM Seed s", Long.class)
+                    .getSingleResult();
+        } finally {
+            em.close();
+        }
+    }
 }

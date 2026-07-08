@@ -1,5 +1,6 @@
 package com.nursery.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -13,6 +14,7 @@ public class Customer {
     private String customerName;
     private String customerEmail;
     private String username;
+    @JsonIgnore
     private String password;
 
     @OneToOne(cascade = CascadeType.ALL)

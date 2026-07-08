@@ -14,4 +14,10 @@ public interface IOrderRepository {
     Order viewOrder(int orderId);
 
     List<Order> viewAllOrders();
+
+    List<Order> viewOrdersByCustomer(int customerId);
+
+    long countOrders();
+
+    long countOrdersByStatus(String orderStatus);
 }

@@ -107,6 +107,17 @@ public class PlanterRepositoryImpl implements IPlanterRepository {
         }
     }
 
+    @Override
+    public long countPlanters() {
+        EntityManager em = JPAUtil.getEntityManagerFactory().createEntityManager();
+        try {
+            return em.createQuery("SELECT COUNT(p) FROM Planter p", Long.class)
+                    .getSingleResult();
+        } finally {
+            em.close();
+        }
+    }
+
     private void linkAssociations(EntityManager em, Planter planter) {
         if (planter.getPlants() != null && planter.getPlants().getPlantId() > 0) {
             Plant plant = em.find(Plant.class, planter.getPlants().getPlantId());

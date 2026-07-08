@@ -1,6 +1,7 @@
 package com.nursery.controller;
 
 import com.nursery.entity.Seed;
+import com.nursery.service.IAdminService;
 import com.nursery.service.ISeedService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,9 +17,11 @@ import java.util.List;
 public class SeedController {
 
     private final ISeedService seedService;
+    private final IAdminService adminService;
 
-    public SeedController(ISeedService seedService) {
+    public SeedController(ISeedService seedService, IAdminService adminService) {
         this.seedService = seedService;
+        this.adminService = adminService;
     }
 
     /**
@@ -57,7 +60,10 @@ public class SeedController {
      * POST /api/seeds
      */
     @PostMapping
-    public ResponseEntity<Seed> addSeed(@RequestBody Seed seed) {
+    public ResponseEntity<Seed> addSeed(@RequestHeader("adminUsername") String adminUsername,
+                                        @RequestHeader("adminPassword") String adminPassword,
+                                        @RequestBody Seed seed) {
+        authorizeAdmin(adminUsername, adminPassword);
         Seed saved = seedService.addSeed(seed);
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
@@ -67,7 +73,11 @@ public class SeedController {
      * PUT /api/seeds/{id}
      */
     @PutMapping("/{id}")
-    public ResponseEntity<Seed> updateSeed(@PathVariable int id, @RequestBody Seed seed) {
+    public ResponseEntity<Seed> updateSeed(@RequestHeader("adminUsername") String adminUsername,
+                                           @RequestHeader("adminPassword") String adminPassword,
+                                           @PathVariable int id,
+                                           @RequestBody Seed seed) {
+        authorizeAdmin(adminUsername, adminPassword);
         seed.setSeedId(id);
         Seed updated = seedService.updateSeed(seed);
         return ResponseEntity.ok(updated);
@@ -78,10 +88,17 @@ public class SeedController {
      * DELETE /api/seeds/{id}
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteSeed(@PathVariable int id) {
+    public ResponseEntity<Void> deleteSeed(@RequestHeader("adminUsername") String adminUsername,
+                                           @RequestHeader("adminPassword") String adminPassword,
+                                           @PathVariable int id) {
+        authorizeAdmin(adminUsername, adminPassword);
         Seed seed = new Seed();
         seed.setSeedId(id);
         seedService.deleteSeed(seed);
         return ResponseEntity.noContent().build();
+    }
+
+    private void authorizeAdmin(String adminUsername, String adminPassword) {
+        adminService.validateAdmin(adminUsername, adminPassword);
     }
 }

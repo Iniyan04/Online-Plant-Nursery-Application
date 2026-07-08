@@ -100,4 +100,15 @@ public class PlantRepositoryImpl implements IPlantRepository {
             em.close();
         }
     }
+
+    @Override
+    public long countPlants() {
+        EntityManager em = JPAUtil.getEntityManagerFactory().createEntityManager();
+        try {
+            return em.createQuery("SELECT COUNT(p) FROM Plant p", Long.class)
+                    .getSingleResult();
+        } finally {
+            em.close();
+        }
+    }
 }

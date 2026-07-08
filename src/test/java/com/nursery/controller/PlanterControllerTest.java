@@ -3,6 +3,7 @@ package com.nursery.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nursery.entity.Planter;
 import com.nursery.exception.PlanterNotFoundException;
+import com.nursery.service.IAdminService;
 import com.nursery.service.IPlanterService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,6 +32,9 @@ class PlanterControllerTest {
 
     @MockBean
     private IPlanterService planterService;
+
+    @MockBean
+    private IAdminService adminService;
 
     private Planter samplePlanter() {
         Planter planter = new Planter(12.5f, 5, 3, 1, "Round", 20, 150, null, null);
@@ -65,6 +69,8 @@ class PlanterControllerTest {
         when(planterService.addPlanter(any(Planter.class))).thenReturn(planter);
 
         mockMvc.perform(post("/api/planters")
+                        .header("adminUsername", "admin")
+                        .header("adminPassword", "admin123")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(planter)))
                 .andExpect(status().isCreated())
@@ -86,7 +92,9 @@ class PlanterControllerTest {
     void deletePlanter_existingPlanter_returns204() throws Exception {
         when(planterService.deletePlanter(any(Planter.class))).thenReturn(samplePlanter());
 
-        mockMvc.perform(delete("/api/planters/1"))
+        mockMvc.perform(delete("/api/planters/1")
+                        .header("adminUsername", "admin")
+                        .header("adminPassword", "admin123"))
                 .andExpect(status().isNoContent());
     }
 }

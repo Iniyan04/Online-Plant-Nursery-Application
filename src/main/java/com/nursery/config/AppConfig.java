@@ -19,6 +19,31 @@ public class AppConfig {
     }
 
     @Bean
+    public IAdminRepository adminRepository() {
+        return new AdminRepositoryImpl();
+    }
+
+    @Bean
+    public IAdminService adminService(IAdminRepository adminRepository) {
+        return new AdminServiceImpl(adminRepository);
+    }
+
+    @Bean
+    public IAdminDashboardService adminDashboardService(ICustomerRepository customerRepository,
+                                                        IOrderRepository orderRepository,
+                                                        IPlantRepository plantRepository,
+                                                        ISeedRepository seedRepository,
+                                                        IPlanterRepository planterRepository) {
+        return new AdminDashboardServiceImpl(
+                customerRepository,
+                orderRepository,
+                plantRepository,
+                seedRepository,
+                planterRepository
+        );
+    }
+
+    @Bean
     public ICustomerService customerService(ICustomerRepository customerRepository) {
         return new CustomerServiceImpl(customerRepository);
     }
@@ -61,7 +86,9 @@ public class AppConfig {
     @Bean
     public IOrderService orderService(IOrderRepository orderRepository,
                                       IPlantRepository plantRepository,
-                                      ISeedRepository seedRepository) {
-        return new OrderServiceImpl(orderRepository, plantRepository, seedRepository);
+                                      ISeedRepository seedRepository,
+                                      IPlanterRepository planterRepository,
+                                      ICustomerRepository customerRepository) {
+        return new OrderServiceImpl(orderRepository, plantRepository, seedRepository, planterRepository, customerRepository);
     }
 }

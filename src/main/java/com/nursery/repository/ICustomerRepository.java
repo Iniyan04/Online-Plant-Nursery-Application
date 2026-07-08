@@ -23,4 +23,6 @@ public interface ICustomerRepository {
      * checking during registration (US-002).
      */
     Customer findByUsername(String userName);
+
+    long countCustomers();
 }

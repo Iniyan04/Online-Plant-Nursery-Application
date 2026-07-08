@@ -18,4 +18,6 @@ public interface IPlantRepository {
     List<Plant> viewAllPlants();
 
     List<Plant> viewAllPlants(String typeOfPlant);
+
+    long countPlants();
 }

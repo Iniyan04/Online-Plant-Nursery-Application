@@ -5,6 +5,7 @@ package com.nursery.dto;
  */
 public class SeedOrderRequest {
 
+    private int customerId;
     private int seedId;
     private int quantity;
     private String transactionMode;
@@ -12,10 +13,19 @@ public class SeedOrderRequest {
     public SeedOrderRequest() {
     }
 
-    public SeedOrderRequest(int seedId, int quantity, String transactionMode) {
+    public SeedOrderRequest(int customerId, int seedId, int quantity, String transactionMode) {
+        this.customerId = customerId;
         this.seedId = seedId;
         this.quantity = quantity;
         this.transactionMode = transactionMode;
+    }
+
+    public int getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(int customerId) {
+        this.customerId = customerId;
     }
 
     public int getSeedId() {

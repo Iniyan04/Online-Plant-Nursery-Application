@@ -99,4 +99,15 @@ class SeedRepositoryImplTest {
         Seed result = seedRepository.viewSeed(idToDelete);
         assertNull(result);
     }
+
+    @Test
+    @DisplayName("countSeeds returns the total number of seeds in the database")
+    void countSeeds_returnsTotalSeeds() {
+        seedSeed("Basil", "Herb");
+        seedSeed("Mint", "Herb");
+
+        long totalSeeds = seedRepository.countSeeds();
+
+        assertEquals(2, totalSeeds);
+    }
 }

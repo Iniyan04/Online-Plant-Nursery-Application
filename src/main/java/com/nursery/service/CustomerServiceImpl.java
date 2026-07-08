@@ -57,22 +57,69 @@ public class CustomerServiceImpl implements ICustomerService {
 
     @Override
     public Customer updateCustomer(Customer customer) {
+        validateCustomerManagementData(customer);
+
+        Customer existing = customerRepository.viewCustomer(customer.getCustomerId());
+        if (existing == null) {
+            throw new InvalidCustomerDataException("No customer found with ID " + customer.getCustomerId());
+        }
+
+        Customer duplicate = customerRepository.findByUsername(customer.getUsername());
+        if (duplicate != null && duplicate.getCustomerId() != customer.getCustomerId()) {
+            throw new DuplicateUsernameException(
+                    "Username '" + customer.getUsername() + "' is already taken");
+        }
+
+        if (isBlank(customer.getPassword())) {
+            customer.setPassword(existing.getPassword());
+        }
+
         return customerRepository.updateCustomer(customer);
     }
 
     @Override
     public Customer deleteCustomer(Customer customer) {
+        if (customer == null || customer.getCustomerId() <= 0) {
+            throw new InvalidCustomerDataException("Customer ID must be greater than zero");
+        }
+
+        Customer existing = customerRepository.viewCustomer(customer.getCustomerId());
+        if (existing == null) {
+            throw new InvalidCustomerDataException("No customer found with ID " + customer.getCustomerId());
+        }
+
         return customerRepository.deleteCustomer(customer);
     }
 
     @Override
     public Customer viewCustomer(int customerId) {
-        return customerRepository.viewCustomer(customerId);
+        if (customerId <= 0) {
+            throw new InvalidCustomerDataException("Customer ID must be greater than zero");
+        }
+
+        Customer customer = customerRepository.viewCustomer(customerId);
+        if (customer == null) {
+            throw new InvalidCustomerDataException("No customer found with ID " + customerId);
+        }
+        return customer;
     }
 
     @Override
     public List<Customer> viewAllCustomers() {
         return customerRepository.viewAllCustomers();
+    }
+
+    @Override
+    public Customer viewCustomer(String username) {
+        if (isBlank(username)) {
+            throw new InvalidCustomerDataException("Username must not be empty");
+        }
+
+        Customer customer = customerRepository.findByUsername(username);
+        if (customer == null) {
+            throw new InvalidCustomerDataException("No customer found with username '" + username + "'");
+        }
+        return customer;
     }
 
     @Override
@@ -88,5 +135,23 @@ public class CustomerServiceImpl implements ICustomerService {
         }
 
         return customer;
+    }
+
+    private void validateCustomerManagementData(Customer customer) {
+        if (customer == null) {
+            throw new InvalidCustomerDataException("Customer data must not be null");
+        }
+        if (customer.getCustomerId() <= 0) {
+            throw new InvalidCustomerDataException("Customer ID must be greater than zero");
+        }
+        if (isBlank(customer.getCustomerName())) {
+            throw new InvalidCustomerDataException("Customer name must not be empty");
+        }
+        if (isBlank(customer.getUsername())) {
+            throw new InvalidCustomerDataException("Username must not be empty");
+        }
+        if (isBlank(customer.getCustomerEmail()) || !EMAIL_PATTERN.matcher(customer.getCustomerEmail()).matches()) {
+            throw new InvalidCustomerDataException("Email must be a valid email address");
+        }
     }
 }

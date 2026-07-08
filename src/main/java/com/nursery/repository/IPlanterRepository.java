@@ -18,4 +18,6 @@ public interface IPlanterRepository {
     List<Planter> viewAllPlanters();
 
     List<Planter> viewAllPlanters(double minCost, double maxCost);
+
+    long countPlanters();
 }

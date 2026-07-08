@@ -18,4 +18,6 @@ public interface ISeedRepository {
     List<Seed> viewAllSeeds();
 
     List<Seed> viewAllSeeds(String typeOfSeed);
+
+    long countSeeds();
 }

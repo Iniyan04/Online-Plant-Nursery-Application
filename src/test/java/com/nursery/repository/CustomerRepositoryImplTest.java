@@ -109,4 +109,39 @@ class CustomerRepositoryImplTest {
         assertNotNull(fetched);
         assertEquals("Alex Roy", fetched.getCustomerName());
     }
+
+    @Test
+    @DisplayName("updateCustomer persists changed email for an existing customer")
+    void updateCustomer_existingCustomer_persistsChanges() {
+        Customer existing = customerRepository.findByUsername("janedoe");
+        existing.setCustomerEmail("newmail@example.com");
+
+        Customer updated = customerRepository.updateCustomer(existing);
+
+        assertEquals("newmail@example.com", updated.getCustomerEmail());
+        Customer refetched = customerRepository.findByUsername("janedoe");
+        assertEquals("newmail@example.com", refetched.getCustomerEmail());
+    }
+
+    @Test
+    @DisplayName("deleteCustomer removes the customer from the database")
+    void deleteCustomer_existingCustomer_removesFromDatabase() {
+        Customer existing = customerRepository.findByUsername("janedoe");
+
+        customerRepository.deleteCustomer(existing);
+
+        Customer refetched = customerRepository.findByUsername("janedoe");
+        assertNull(refetched);
+    }
+
+    @Test
+    @DisplayName("countCustomers returns the total number of customers in the database")
+    void countCustomers_returnsTotalCustomers() {
+        Address newAddress = new Address("45", "Lake View", "Chennai", "Tamil Nadu", 600001);
+        customerRepository.addCustomer(new Customer("Alex Roy", "alex@example.com", "alexroy", "pass456", newAddress));
+
+        long totalCustomers = customerRepository.countCustomers();
+
+        assertEquals(2, totalCustomers);
+    }
 }
