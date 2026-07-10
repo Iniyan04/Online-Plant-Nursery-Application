@@ -39,3 +39,7 @@ Thumbs.db
 *.db
 *.trace.db
 *.lock.db
+
+frontend/node_modules/
+frontend/dist/
+frontend/.env
