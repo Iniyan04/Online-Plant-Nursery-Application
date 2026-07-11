@@ -106,3 +106,130 @@ export async function deletePlant(id, admin) {
     throw unwrapError(err)
   }
 }
+
+// ---------- US-007: View Seeds ----------
+
+export async function getSeeds(type) {
+  try {
+    const res = await client.get('/api/seeds', { params: type ? { type } : {} })
+    return res.data // Seed[]
+  } catch (err) {
+    throw unwrapError(err)
+  }
+}
+
+export async function getSeedById(id) {
+  try {
+    const res = await client.get(`/api/seeds/${id}`)
+    return res.data // Seed
+  } catch (err) {
+    throw unwrapError(err)
+  }
+}
+
+// ---------- US-008: Manage Seeds CRUD ----------
+
+export async function addSeed(seed, admin) {
+  try {
+    const res = await client.post('/api/seeds', seed, adminHeaders(admin))
+    return res.data
+  } catch (err) {
+    throw unwrapError(err)
+  }
+}
+
+export async function updateSeed(id, seed, admin) {
+  try {
+    const res = await client.put(`/api/seeds/${id}`, seed, adminHeaders(admin))
+    return res.data
+  } catch (err) {
+    throw unwrapError(err)
+  }
+}
+
+export async function deleteSeed(id, admin) {
+  try {
+    await client.delete(`/api/seeds/${id}`, adminHeaders(admin))
+  } catch (err) {
+    throw unwrapError(err)
+  }
+}
+
+// ---------- US-009: View Planters ----------
+
+export async function getPlanters(minCost, maxCost) {
+  try {
+    const params = minCost != null && maxCost != null ? { minCost, maxCost } : {}
+    const res = await client.get('/api/planters', { params })
+    return res.data // Planter[]
+  } catch (err) {
+    throw unwrapError(err)
+  }
+}
+
+export async function getPlanterById(id) {
+  try {
+    const res = await client.get(`/api/planters/${id}`)
+    return res.data // Planter
+  } catch (err) {
+    throw unwrapError(err)
+  }
+}
+
+// ---------- US-010: Manage Planters CRUD ----------
+
+export async function addPlanter(planter, admin) {
+  try {
+    const res = await client.post('/api/planters', planter, adminHeaders(admin))
+    return res.data
+  } catch (err) {
+    throw unwrapError(err)
+  }
+}
+
+export async function updatePlanter(id, planter, admin) {
+  try {
+    const res = await client.put(`/api/planters/${id}`, planter, adminHeaders(admin))
+    return res.data
+  } catch (err) {
+    throw unwrapError(err)
+  }
+}
+
+export async function deletePlanter(id, admin) {
+  try {
+    await client.delete(`/api/planters/${id}`, adminHeaders(admin))
+  } catch (err) {
+    throw unwrapError(err)
+  }
+}
+
+// ---------- US-011/012: Order Plants & Seeds ----------
+
+export async function orderPlant(customerId, plantId, quantity, transactionMode) {
+  try {
+    const res = await client.post('/api/orders/plants', {
+      customerId,
+      plantId,
+      quantity,
+      transactionMode
+    })
+    return res.data // Order
+  } catch (err) {
+    throw unwrapError(err)
+  }
+}
+
+export async function orderSeed(customerId, seedId, quantity, transactionMode) {
+  try {
+    const res = await client.post('/api/orders/seeds', {
+      customerId,
+      seedId,
+      quantity,
+      transactionMode
+    })
+    return res.data // Order
+  } catch (err) {
+    throw unwrapError(err)
+  }
+}

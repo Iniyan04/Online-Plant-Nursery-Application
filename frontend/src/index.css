@@ -519,6 +519,39 @@ button, input, select, textarea {
   font-weight: 500;
 }
 
+.detail-actions {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--card-edge);
+}
+
+/* ---------- Checkout ---------- */
+
+.checkout-card {
+  max-width: 480px;
+}
+
+.checkout-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin: 20px 0 24px;
+  padding: 14px 0;
+  border-top: 1px dashed var(--card-edge);
+  font-weight: 500;
+}
+
+.checkout-total-amount {
+  font-family: var(--font-mono);
+  font-size: 1.4rem;
+}
+
+.checkout-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
 /* ---------- Admin table ---------- */
 
 .table-wrap {

@@ -19,12 +19,26 @@ export default function Navbar() {
 
         <nav className="nav-links">
           <NavLink to="/plants" className={({ isActive }) => (isActive ? 'active' : '')}>
-            Catalog
+            Plants
+          </NavLink>
+          <NavLink to="/seeds" className={({ isActive }) => (isActive ? 'active' : '')}>
+            Seeds
+          </NavLink>
+          <NavLink to="/planters" className={({ isActive }) => (isActive ? 'active' : '')}>
+            Planters
           </NavLink>
           {auth?.role === 'admin' && (
-            <NavLink to="/admin/plants" className={({ isActive }) => (isActive ? 'active' : '')}>
-              Manage Plants
-            </NavLink>
+            <>
+              <NavLink to="/admin/plants" className={({ isActive }) => (isActive ? 'active' : '')}>
+                Manage Plants
+              </NavLink>
+              <NavLink to="/admin/seeds" className={({ isActive }) => (isActive ? 'active' : '')}>
+                Manage Seeds
+              </NavLink>
+              <NavLink to="/admin/planters" className={({ isActive }) => (isActive ? 'active' : '')}>
+                Manage Planters
+              </NavLink>
+            </>
           )}
         </nav>
 

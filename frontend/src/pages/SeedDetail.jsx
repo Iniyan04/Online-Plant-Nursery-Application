@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { getPlantById } from '../api/client.js'
+import { getSeedById } from '../api/client.js'
 import { useAuth } from '../context/AuthContext.jsx'
 
-export default function PlantDetail() {
+export default function SeedDetail() {
   const { id } = useParams()
   const { auth } = useAuth()
-  const [plant, setPlant] = useState(null)
+  const [seed, setSeed] = useState(null)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(true)
 
@@ -15,9 +15,9 @@ export default function PlantDetail() {
     setLoading(true)
     setError('')
 
-    getPlantById(id)
+    getSeedById(id)
       .then((data) => {
-        if (!cancelled) setPlant(data)
+        if (!cancelled) setSeed(data)
       })
       .catch((err) => {
         if (!cancelled) setError(err.message)
@@ -34,7 +34,7 @@ export default function PlantDetail() {
   if (loading) {
     return (
       <div className="state-block">
-        <p className="page-title">Loading plant…</p>
+        <p className="page-title">Loading seed…</p>
       </div>
     )
   }
@@ -42,71 +42,69 @@ export default function PlantDetail() {
   if (error) {
     return (
       <div className="state-block">
-        <p className="page-title">Couldn't find that plant</p>
+        <p className="page-title">Couldn't find that seed</p>
         <p>{error}</p>
-        <Link className="btn btn-outline mt-24" to="/plants">
+        <Link className="btn btn-outline mt-24" to="/seeds">
           Back to catalog
         </Link>
       </div>
     )
   }
 
+  const inStock = seed.seedsStock > 0
+
   return (
     <div>
-      <Link to="/plants" className="btn-ghost" style={{ marginBottom: 24, display: 'inline-block' }}>
+      <Link to="/seeds" className="btn-ghost" style={{ marginBottom: 24, display: 'inline-block' }}>
         ← Back to catalog
       </Link>
 
       <div className="detail-card">
-        <div className="plant-tag-type">{plant.typeOfPlant || 'Plant'}</div>
-        <h1>{plant.commonName}</h1>
-        <p className="detail-desc">{plant.plantDescription}</p>
+        <div className="plant-tag-type">{seed.typeOfSeeds || 'Seed'}</div>
+        <h1>{seed.commonName}</h1>
+        <p className="detail-desc">{seed.seedsDescription}</p>
 
         <div className="detail-specs">
           <div>
-            <div className="spec-label">Height</div>
-            <div className="spec-value">{plant.plantHeight} cm</div>
-          </div>
-          <div>
-            <div className="spec-label">Spread</div>
-            <div className="spec-value">{plant.plantSpread}</div>
-          </div>
-          <div>
             <div className="spec-label">Bloom time</div>
-            <div className="spec-value">{plant.bloomTime}</div>
+            <div className="spec-value">{seed.bloomTime}</div>
+          </div>
+          <div>
+            <div className="spec-label">Watering</div>
+            <div className="spec-value">{seed.watering}</div>
           </div>
           <div>
             <div className="spec-label">Difficulty</div>
-            <div className="spec-value">{plant.difficultyLevel}</div>
+            <div className="spec-value">{seed.difficultyLevel}</div>
           </div>
           <div>
             <div className="spec-label">Ideal temperature</div>
-            <div className="spec-value">{plant.temparature}</div>
+            <div className="spec-value">{seed.temparature}</div>
           </div>
           <div>
-            <div className="spec-label">Medicinal / culinary use</div>
-            <div className="spec-value">{plant.medicinalOrCulinaryUse || '—'}</div>
+            <div className="spec-label">Seeds per packet</div>
+            <div className="spec-value">{seed.seedsPerPacket}</div>
           </div>
         </div>
 
         <div className="detail-price-row">
           <div>
             <div className="spec-label">Price</div>
-            <div className="detail-price">₹{plant.plantCost.toFixed(2)}</div>
+            <div className="detail-price">₹{seed.seedsCost.toFixed(2)}</div>
           </div>
           <div style={{ textAlign: 'right' }}>
             <div className="spec-label">Stock</div>
             <div className="spec-value">
-              {plant.plantsStock > 0 ? `${plant.plantsStock} available` : 'Out of stock'}
+              {inStock ? `${seed.seedsStock} available` : 'Out of stock'}
             </div>
           </div>
         </div>
 
-        {plant.plantsStock > 0 && (
+        {inStock && (
           <div className="detail-actions">
             {auth?.role === 'customer' ? (
-              <Link to={`/plants/${plant.plantId}/order`} className="btn btn-primary">
-                Order plant
+              <Link to={`/seeds/${seed.seedId}/order`} className="btn btn-primary">
+                Order seeds
               </Link>
             ) : (
               <Link to="/login" className="btn btn-primary">
