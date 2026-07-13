@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { loginCustomer, loginAdmin } from '../api/client.js'
 import { useAuth } from '../context/AuthContext.jsx'
 
@@ -11,6 +11,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false)
 
   const { loginAsCustomer, loginAsAdmin } = useAuth()
+  const location = useLocation()
   const navigate = useNavigate()
 
   async function handleSubmit(e) {
@@ -58,6 +59,7 @@ export default function Login() {
           </button>
         </div>
 
+        {location.state?.success && <div className="alert alert-success">{location.state.success}</div>}
         {error && <div className="alert alert-error">{error}</div>}
 
         <div className="field">

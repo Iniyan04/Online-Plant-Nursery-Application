@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { getPlanterById } from '../api/client.js'
+import { useAuth } from '../context/AuthContext.jsx'
 
 export default function PlanterDetail() {
   const { id } = useParams()
+  const { auth } = useAuth()
   const [planter, setPlanter] = useState(null)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(true)
@@ -106,6 +108,20 @@ export default function PlanterDetail() {
             </div>
           </div>
         </div>
+
+        {planter.planterStock > 0 && (
+          <div className="detail-actions">
+            {auth?.role === 'customer' ? (
+              <Link to={`/planters/${planter.planterId}/order`} className="btn btn-primary">
+                Order planter
+              </Link>
+            ) : (
+              <Link to="/login" className="btn btn-primary">
+                Log in to order
+              </Link>
+            )}
+          </div>
+        )}
       </div>
     </div>
   )

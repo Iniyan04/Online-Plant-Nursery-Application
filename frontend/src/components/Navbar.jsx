@@ -27,8 +27,16 @@ export default function Navbar() {
           <NavLink to="/planters" className={({ isActive }) => (isActive ? 'active' : '')}>
             Planters
           </NavLink>
+          {auth?.role === 'customer' && (
+            <NavLink to="/orders" className={({ isActive }) => (isActive ? 'active' : '')}>
+              My Orders
+            </NavLink>
+          )}
           {auth?.role === 'admin' && (
             <>
+              <NavLink to="/admin/dashboard" className={({ isActive }) => (isActive ? 'active' : '')}>
+                Dashboard
+              </NavLink>
               <NavLink to="/admin/plants" className={({ isActive }) => (isActive ? 'active' : '')}>
                 Manage Plants
               </NavLink>
@@ -37,6 +45,9 @@ export default function Navbar() {
               </NavLink>
               <NavLink to="/admin/planters" className={({ isActive }) => (isActive ? 'active' : '')}>
                 Manage Planters
+              </NavLink>
+              <NavLink to="/admin/customers" className={({ isActive }) => (isActive ? 'active' : '')}>
+                Customers
               </NavLink>
             </>
           )}

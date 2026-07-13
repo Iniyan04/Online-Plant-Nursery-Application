@@ -1,16 +1,19 @@
 import { useEffect, useState } from 'react'
-import { getPlants, addPlant, updatePlant, deletePlant } from '../../api/client.js'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { getPlants, addPlant, deletePlant } from '../../api/client.js'
 import { useAuth } from '../../context/AuthContext.jsx'
 import PlantFormModal from '../../components/PlantFormModal.jsx'
 
 export default function ManagePlants() {
   const { auth } = useAuth()
+  const location = useLocation()
+  const navigate = useNavigate()
   const [plants, setPlants] = useState([])
   const [loading, setLoading] = useState(true)
   const [listError, setListError] = useState('')
+  const [successMessage, setSuccessMessage] = useState(location.state?.success || '')
 
-  const [modalMode, setModalMode] = useState(null) // null | 'add' | 'edit'
-  const [editingPlant, setEditingPlant] = useState(null)
+  const [showAddModal, setShowAddModal] = useState(false)
   const [saving, setSaving] = useState(false)
   const [formError, setFormError] = useState('')
 
@@ -27,32 +30,26 @@ export default function ManagePlants() {
 
   useEffect(loadPlants, [])
 
-  function openAdd() {
-    setEditingPlant(null)
-    setFormError('')
-    setModalMode('add')
-  }
+  useEffect(() => {
+    if (!location.state?.success) return
+    setSuccessMessage(location.state.success)
+    navigate(location.pathname, { replace: true, state: null })
+  }, [location.pathname, location.state, navigate])
 
-  function openEdit(plant) {
-    setEditingPlant(plant)
+  function openAdd() {
     setFormError('')
-    setModalMode('edit')
+    setShowAddModal(true)
   }
 
   function closeModal() {
-    setModalMode(null)
-    setEditingPlant(null)
+    setShowAddModal(false)
   }
 
   async function handleSave(formValues) {
     setSaving(true)
     setFormError('')
     try {
-      if (modalMode === 'add') {
-        await addPlant(formValues, auth.admin)
-      } else {
-        await updatePlant(editingPlant.plantId, formValues, auth.admin)
-      }
+      await addPlant(formValues, auth.admin)
       closeModal()
       loadPlants()
     } catch (err) {
@@ -88,6 +85,7 @@ export default function ManagePlants() {
         </button>
       </div>
 
+      {successMessage && <div className="alert alert-success">{successMessage}</div>}
       {listError && <div className="alert alert-error--dark">{listError}</div>}
 
       {loading && (
@@ -124,9 +122,9 @@ export default function ManagePlants() {
                   <td className="num">₹{plant.plantCost.toFixed(2)}</td>
                   <td>
                     <div className="row-actions">
-                      <button className="btn btn-outline btn-sm" onClick={() => openEdit(plant)}>
+                      <Link className="btn btn-outline btn-sm" to={`/admin/plants/${plant.plantId}/edit`}>
                         Edit
-                      </button>
+                      </Link>
                       <button
                         className="btn btn-danger btn-sm"
                         onClick={() => handleDelete(plant)}
@@ -143,10 +141,9 @@ export default function ManagePlants() {
         </div>
       )}
 
-      {modalMode && (
+      {showAddModal && (
         <PlantFormModal
-          title={modalMode === 'add' ? 'Add plant' : `Edit ${editingPlant.commonName}`}
-          initial={editingPlant}
+          title="Add plant"
           onSave={handleSave}
           onClose={closeModal}
           saving={saving}

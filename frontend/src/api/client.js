@@ -233,3 +233,87 @@ export async function orderSeed(customerId, seedId, quantity, transactionMode) {
     throw unwrapError(err)
   }
 }
+
+// ---------- US-013: Order Planters ----------
+
+export async function orderPlanter(customerId, planterId, quantity, transactionMode) {
+  try {
+    const res = await client.post('/api/orders/planters', {
+      customerId,
+      planterId,
+      quantity,
+      transactionMode
+    })
+    return res.data
+  } catch (err) {
+    throw unwrapError(err)
+  }
+}
+
+// ---------- US-014/015: Order History & Cancellation ----------
+
+export async function getOrdersByCustomer(customerId) {
+  try {
+    const res = await client.get(`/api/orders/customer/${customerId}`)
+    return res.data
+  } catch (err) {
+    throw unwrapError(err)
+  }
+}
+
+export async function cancelOrder(orderId, customerId) {
+  try {
+    const res = await client.put(`/api/orders/${orderId}/cancel`, { customerId })
+    return res.data
+  } catch (err) {
+    throw unwrapError(err)
+  }
+}
+
+// ---------- US-016: Admin Customer Management ----------
+
+export async function getCustomers(admin) {
+  try {
+    const res = await client.get('/api/customers', adminHeaders(admin))
+    return res.data
+  } catch (err) {
+    throw unwrapError(err)
+  }
+}
+
+export async function searchCustomer(username, admin) {
+  try {
+    const res = await client.get(`/api/customers/search/${encodeURIComponent(username)}`, adminHeaders(admin))
+    return res.data
+  } catch (err) {
+    throw unwrapError(err)
+  }
+}
+
+export async function updateCustomer(customerId, payload, admin) {
+  try {
+    const res = await client.put(`/api/customers/${customerId}`, payload, adminHeaders(admin))
+    return res.data
+  } catch (err) {
+    throw unwrapError(err)
+  }
+}
+
+export async function deleteCustomer(customerId, admin) {
+  try {
+    await client.delete(`/api/customers/${customerId}`, adminHeaders(admin))
+  } catch (err) {
+    throw unwrapError(err)
+  }
+}
+
+// ---------- US-017: Admin Dashboard ----------
+
+export async function getDashboard(admin) {
+  try {
+    const res = await client.get('/api/admins/dashboard', adminHeaders(admin))
+    return res.data
+  } catch (err) {
+    throw unwrapError(err)
+  }
+}
