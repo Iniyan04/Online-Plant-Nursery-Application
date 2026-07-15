@@ -74,7 +74,7 @@ export default function PlanterCatalog() {
       )}
 
       {!loading && planters.length > 0 && (
-        <div className="tag-grid">
+        <div className="product-grid">
           {planters.map((planter) => (
             <PlanterTag key={planter.planterId} planter={planter} />
           ))}

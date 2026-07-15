@@ -20,6 +20,7 @@ public class Seed {
     private int seedsStock;
     private double seedsCost;
     private int seedsPerPacket;
+    private String imageUrl;
 
     public Seed() {
     }
@@ -125,5 +126,13 @@ public class Seed {
 
     public void setSeedsPerPacket(int seedsPerPacket) {
         this.seedsPerPacket = seedsPerPacket;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

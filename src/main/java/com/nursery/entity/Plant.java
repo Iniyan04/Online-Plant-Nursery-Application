@@ -21,6 +21,7 @@ public class Plant {
     private String plantDescription;
     private int plantsStock;
     private double plantCost;
+    private String imageUrl;
 
     public Plant() {
     }
@@ -135,5 +136,13 @@ public class Plant {
 
     public void setPlantCost(double plantCost) {
         this.plantCost = plantCost;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

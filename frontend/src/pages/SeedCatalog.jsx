@@ -68,7 +68,7 @@ export default function SeedCatalog() {
       )}
 
       {!loading && seeds.length > 0 && (
-        <div className="tag-grid">
+        <div className="product-grid">
           {seeds.map((seed) => (
             <SeedTag key={seed.seedId} seed={seed} />
           ))}

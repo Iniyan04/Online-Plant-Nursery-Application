@@ -57,6 +57,12 @@ export default function PlantDetail() {
         ← Back to catalog
       </Link>
 
+      {plant.imageUrl ? (
+        <img src={plant.imageUrl} alt={plant.commonName} className="detail-hero" />
+      ) : (
+        <div className="detail-hero-placeholder">🌿</div>
+      )}
+
       <div className="detail-card">
         <div className="plant-tag-type">{plant.typeOfPlant || 'Plant'}</div>
         <h1>{plant.commonName}</h1>

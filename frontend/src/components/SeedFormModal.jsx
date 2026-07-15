@@ -10,7 +10,8 @@ const BLANK = {
   seedsDescription: '',
   seedsStock: '',
   seedsCost: '',
-  seedsPerPacket: ''
+  seedsPerPacket: '',
+  imageUrl: ''
 }
 
 export default function SeedFormModal({ initial, title, onSave, onClose, saving, error }) {
@@ -99,6 +100,23 @@ export default function SeedFormModal({ initial, title, onSave, onClose, saving,
           <div className="field">
             <label htmlFor="seedsCost">Cost (₹)</label>
             <input id="seedsCost" type="number" min="0" step="0.01" value={form.seedsCost} onChange={update('seedsCost')} required />
+          </div>
+
+          <div className="field">
+            <label htmlFor="imageUrl">Image URL</label>
+            <input
+              id="imageUrl"
+              value={form.imageUrl || ''}
+              onChange={update('imageUrl')}
+              placeholder="Paste an image URL from Unsplash or Google Images"
+            />
+            {form.imageUrl ? (
+              <img src={form.imageUrl} alt="preview" className="img-preview"
+                onError={(e) => { e.target.style.display='none'; e.target.nextSibling.style.display='flex' }} />
+            ) : null}
+            <div className="img-preview-placeholder" style={{ display: form.imageUrl ? 'none' : 'flex' }}>
+              No image yet — paste a URL above to preview
+            </div>
           </div>
 
           <div className="modal-actions">

@@ -17,6 +17,7 @@ public class Planter {
     private String planterShape;
     private int planterStock;
     private int planterCost;
+    private String imageUrl;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "plant_id")
@@ -120,5 +121,13 @@ public class Planter {
 
     public void setSeeds(Seed seeds) {
         this.seeds = seeds;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

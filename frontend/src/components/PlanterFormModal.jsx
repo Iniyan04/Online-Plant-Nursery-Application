@@ -9,7 +9,8 @@ const BLANK = {
   planterStock: '',
   planterCost: '',
   plantId: '',
-  seedId: ''
+  seedId: '',
+  imageUrl: ''
 }
 
 export default function PlanterFormModal({ initial, title, onSave, onClose, saving, error, plants, seeds }) {
@@ -35,7 +36,8 @@ export default function PlanterFormModal({ initial, title, onSave, onClose, savi
       drainageHoles: Number(form.drainageHoles) || 0,
       planterColor: Number(form.planterColor) || 0,
       planterStock: Number(form.planterStock) || 0,
-      planterCost: Number(form.planterCost) || 0
+      planterCost: Number(form.planterCost) || 0,
+      imageUrl: form.imageUrl || null
     }
     if (form.plantId) {
       payload.plants = { plantId: Number(form.plantId) }
@@ -115,6 +117,23 @@ export default function PlanterFormModal({ initial, title, onSave, onClose, savi
                   <option key={s.seedId} value={s.seedId}>{s.commonName}</option>
                 ))}
               </select>
+            </div>
+          </div>
+
+          <div className="field">
+            <label htmlFor="imageUrl">Image URL</label>
+            <input
+              id="imageUrl"
+              value={form.imageUrl || ''}
+              onChange={update('imageUrl')}
+              placeholder="Paste an image URL from Unsplash or Google Images"
+            />
+            {form.imageUrl ? (
+              <img src={form.imageUrl} alt="preview" className="img-preview"
+                onError={(e) => { e.target.style.display='none'; e.target.nextSibling.style.display='flex' }} />
+            ) : null}
+            <div className="img-preview-placeholder" style={{ display: form.imageUrl ? 'none' : 'flex' }}>
+              No image yet — paste a URL above to preview
             </div>
           </div>
 
