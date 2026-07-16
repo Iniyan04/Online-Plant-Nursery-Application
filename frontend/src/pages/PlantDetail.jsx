@@ -4,6 +4,7 @@ import { getPlantById } from '../api/client.js'
 import EmptyState from '../components/EmptyState.jsx'
 import { DetailSkeleton } from '../components/LoadingBlock.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
+import PlantChatbot from '../components/PlantChatbot.jsx'
 
 export default function PlantDetail() {
   const { id } = useParams()
@@ -130,6 +131,9 @@ export default function PlantDetail() {
           )}
         </div>
       </div>
+
+      {/* Floating plant care chatbot — powered by Gemini */}
+      <PlantChatbot plant={plant} />
     </div>
   )
 }
