@@ -19,7 +19,7 @@ export default function PlantFormModal({ initial, title, onSave, onClose, saving
   const [form, setForm] = useState(() => (initial ? { ...initial } : BLANK))
 
   function update(field) {
-    return (e) => setForm((f) => ({ ...f, [field]: e.target.value }))
+    return (e) => setForm((current) => ({ ...current, [field]: e.target.value }))
   }
 
   function handleSubmit(e) {
@@ -34,17 +34,21 @@ export default function PlantFormModal({ initial, title, onSave, onClose, saving
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+      <div className="modal-card modal-card-premium" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>{title}</h2>
+          <div>
+            <span className="modal-icon-badge" aria-hidden="true">P</span>
+            <h2>{title}</h2>
+          </div>
           <button className="modal-close" onClick={onClose} aria-label="Close">
-            ×
+            x
           </button>
         </div>
 
         {error && <div className="alert alert-error">{error}</div>}
 
         <form onSubmit={handleSubmit}>
+          <div className="modal-section-title">Plant profile</div>
           <div className="field">
             <label htmlFor="commonName">Common name</label>
             <input id="commonName" value={form.commonName} onChange={update('commonName')} required />
@@ -102,13 +106,14 @@ export default function PlantFormModal({ initial, title, onSave, onClose, saving
             />
           </div>
 
+          <div className="modal-section-title">Pricing and stock</div>
           <div className="field-row">
             <div className="field">
               <label htmlFor="plantsStock">Stock</label>
               <input id="plantsStock" type="number" min="0" value={form.plantsStock} onChange={update('plantsStock')} required />
             </div>
             <div className="field">
-              <label htmlFor="plantCost">Cost (₹)</label>
+              <label htmlFor="plantCost">Cost (Rs.)</label>
               <input id="plantCost" type="number" min="0" step="0.01" value={form.plantCost} onChange={update('plantCost')} required />
             </div>
           </div>
@@ -122,11 +127,18 @@ export default function PlantFormModal({ initial, title, onSave, onClose, saving
               placeholder="Paste an image URL from Unsplash or Google Images"
             />
             {form.imageUrl ? (
-              <img src={form.imageUrl} alt="preview" className="img-preview"
-                onError={(e) => { e.target.style.display='none'; e.target.nextSibling.style.display='flex' }} />
+              <img
+                src={form.imageUrl}
+                alt="preview"
+                className="img-preview"
+                onError={(e) => {
+                  e.target.style.display = 'none'
+                  e.target.nextSibling.style.display = 'flex'
+                }}
+              />
             ) : null}
             <div className="img-preview-placeholder" style={{ display: form.imageUrl ? 'none' : 'flex' }}>
-              No image yet — paste a URL above to preview
+              No image yet - paste a URL above to preview
             </div>
           </div>
 
@@ -135,7 +147,7 @@ export default function PlantFormModal({ initial, title, onSave, onClose, saving
               Cancel
             </button>
             <button type="submit" className="btn btn-primary" disabled={saving}>
-              {saving ? 'Saving…' : 'Save plant'}
+              {saving ? 'Saving...' : 'Save plant'}
             </button>
           </div>
         </form>

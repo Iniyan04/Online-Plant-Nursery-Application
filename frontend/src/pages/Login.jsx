@@ -36,65 +36,79 @@ export default function Login() {
   }
 
   return (
-    <div className="center" style={{ minHeight: '70vh' }}>
-      <form className="form-card" onSubmit={handleSubmit}>
-        <p className="eyebrow">Welcome back</p>
-        <h1 className="page-title">Log in</h1>
-        <p className="page-sub">Sign in to browse the catalog or manage the nursery.</p>
+    <div className="login-shell page-fade-in">
+      <section className="login-feature-panel">
+        <span className="catalog-badge">Welcome to Greenroot</span>
+        <h1 className="login-feature-title">Bring home a calmer, greener space.</h1>
+        <p className="login-feature-copy">
+          Browse curated plants, seed packs, and planters with the same trusted customer and admin access you already use.
+        </p>
+        <div className="login-feature-card">
+          <strong>Fresh arrivals</strong>
+          <span>Plants, seeds, and planters selected for everyday growers.</span>
+        </div>
+      </section>
 
-        <div className="role-toggle" role="tablist" aria-label="Login as">
-          <button
-            type="button"
-            className={role === 'customer' ? 'active' : ''}
-            onClick={() => setRole('customer')}
-          >
-            Customer
+      <div className="center login-form-wrap">
+        <form className="form-card login-form-card" onSubmit={handleSubmit}>
+          <p className="eyebrow">Welcome back</p>
+          <h1 className="page-title">Log in</h1>
+          <p className="page-sub">Sign in to browse the catalog or manage the nursery.</p>
+
+          <div className="role-toggle" role="tablist" aria-label="Login as">
+            <button
+              type="button"
+              className={role === 'customer' ? 'active' : ''}
+              onClick={() => setRole('customer')}
+            >
+              Customer
+            </button>
+            <button
+              type="button"
+              className={role === 'admin' ? 'active' : ''}
+              onClick={() => setRole('admin')}
+            >
+              Admin
+            </button>
+          </div>
+
+          {location.state?.success && <div className="alert alert-success">{location.state.success}</div>}
+          {error && <div className="alert alert-error">{error}</div>}
+
+          <div className="field">
+            <label htmlFor="username">Username</label>
+            <input
+              id="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              autoComplete="username"
+              required
+            />
+          </div>
+
+          <div className="field">
+            <label htmlFor="password">Password</label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete="current-password"
+              required
+            />
+          </div>
+
+          <button className="btn btn-primary btn-block" type="submit" disabled={loading}>
+            {loading ? 'Signing in...' : 'Log in'}
           </button>
-          <button
-            type="button"
-            className={role === 'admin' ? 'active' : ''}
-            onClick={() => setRole('admin')}
-          >
-            Admin
-          </button>
-        </div>
 
-        {location.state?.success && <div className="alert alert-success">{location.state.success}</div>}
-        {error && <div className="alert alert-error">{error}</div>}
-
-        <div className="field">
-          <label htmlFor="username">Username</label>
-          <input
-            id="username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            autoComplete="username"
-            required
-          />
-        </div>
-
-        <div className="field">
-          <label htmlFor="password">Password</label>
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            autoComplete="current-password"
-            required
-          />
-        </div>
-
-        <button className="btn btn-primary btn-block" type="submit" disabled={loading}>
-          {loading ? 'Signing in…' : 'Log in'}
-        </button>
-
-        {role === 'customer' && (
-          <p className="form-footer-link">
-            New here? <Link to="/register">Create an account</Link>
-          </p>
-        )}
-      </form>
+          {role === 'customer' && (
+            <p className="form-footer-link">
+              New here? <Link to="/register">Create an account</Link>
+            </p>
+          )}
+        </form>
+      </div>
     </div>
   )
 }

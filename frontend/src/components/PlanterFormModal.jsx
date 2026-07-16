@@ -24,7 +24,7 @@ export default function PlanterFormModal({ initial, title, onSave, onClose, savi
   })
 
   function update(field) {
-    return (e) => setForm((f) => ({ ...f, [field]: e.target.value }))
+    return (e) => setForm((current) => ({ ...current, [field]: e.target.value }))
   }
 
   function handleSubmit(e) {
@@ -50,17 +50,21 @@ export default function PlanterFormModal({ initial, title, onSave, onClose, savi
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+      <div className="modal-card modal-card-premium" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>{title}</h2>
+          <div>
+            <span className="modal-icon-badge" aria-hidden="true">T</span>
+            <h2>{title}</h2>
+          </div>
           <button className="modal-close" onClick={onClose} aria-label="Close">
-            ×
+            x
           </button>
         </div>
 
         {error && <div className="alert alert-error">{error}</div>}
 
         <form onSubmit={handleSubmit}>
+          <div className="modal-section-title">Planter details</div>
           <div className="field">
             <label htmlFor="planterShape">Shape</label>
             <input id="planterShape" value={form.planterShape} onChange={update('planterShape')} placeholder="Round / Square / Oval" required />
@@ -88,13 +92,14 @@ export default function PlanterFormModal({ initial, title, onSave, onClose, savi
             </div>
           </div>
 
+          <div className="modal-section-title">Pricing and links</div>
           <div className="field-row">
             <div className="field">
               <label htmlFor="planterStock">Stock</label>
               <input id="planterStock" type="number" min="0" value={form.planterStock} onChange={update('planterStock')} required />
             </div>
             <div className="field">
-              <label htmlFor="planterCost">Cost (₹)</label>
+              <label htmlFor="planterCost">Cost (Rs.)</label>
               <input id="planterCost" type="number" min="0" value={form.planterCost} onChange={update('planterCost')} required />
             </div>
           </div>
@@ -104,8 +109,8 @@ export default function PlanterFormModal({ initial, title, onSave, onClose, savi
               <label htmlFor="plantId">Linked plant (optional)</label>
               <select id="plantId" value={form.plantId} onChange={update('plantId')}>
                 <option value="">None</option>
-                {plants.map((p) => (
-                  <option key={p.plantId} value={p.plantId}>{p.commonName}</option>
+                {plants.map((plant) => (
+                  <option key={plant.plantId} value={plant.plantId}>{plant.commonName}</option>
                 ))}
               </select>
             </div>
@@ -113,8 +118,8 @@ export default function PlanterFormModal({ initial, title, onSave, onClose, savi
               <label htmlFor="seedId">Linked seed (optional)</label>
               <select id="seedId" value={form.seedId} onChange={update('seedId')}>
                 <option value="">None</option>
-                {seeds.map((s) => (
-                  <option key={s.seedId} value={s.seedId}>{s.commonName}</option>
+                {seeds.map((seed) => (
+                  <option key={seed.seedId} value={seed.seedId}>{seed.commonName}</option>
                 ))}
               </select>
             </div>
@@ -129,11 +134,18 @@ export default function PlanterFormModal({ initial, title, onSave, onClose, savi
               placeholder="Paste an image URL from Unsplash or Google Images"
             />
             {form.imageUrl ? (
-              <img src={form.imageUrl} alt="preview" className="img-preview"
-                onError={(e) => { e.target.style.display='none'; e.target.nextSibling.style.display='flex' }} />
+              <img
+                src={form.imageUrl}
+                alt="preview"
+                className="img-preview"
+                onError={(e) => {
+                  e.target.style.display = 'none'
+                  e.target.nextSibling.style.display = 'flex'
+                }}
+              />
             ) : null}
             <div className="img-preview-placeholder" style={{ display: form.imageUrl ? 'none' : 'flex' }}>
-              No image yet — paste a URL above to preview
+              No image yet - paste a URL above to preview
             </div>
           </div>
 
@@ -142,7 +154,7 @@ export default function PlanterFormModal({ initial, title, onSave, onClose, savi
               Cancel
             </button>
             <button type="submit" className="btn btn-primary" disabled={saving}>
-              {saving ? 'Saving…' : 'Save planter'}
+              {saving ? 'Saving...' : 'Save planter'}
             </button>
           </div>
         </form>

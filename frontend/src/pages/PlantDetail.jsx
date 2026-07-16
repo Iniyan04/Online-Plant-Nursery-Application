@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { getPlantById } from '../api/client.js'
+import EmptyState from '../components/EmptyState.jsx'
+import { DetailSkeleton } from '../components/LoadingBlock.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 
 export default function PlantDetail() {
@@ -32,95 +34,101 @@ export default function PlantDetail() {
   }, [id])
 
   if (loading) {
-    return (
-      <div className="state-block">
-        <p className="page-title">Loading plant…</p>
-      </div>
-    )
+    return <DetailSkeleton />
   }
 
   if (error) {
     return (
-      <div className="state-block">
-        <p className="page-title">Couldn't find that plant</p>
-        <p>{error}</p>
-        <Link className="btn btn-outline mt-24" to="/plants">
-          Back to catalog
-        </Link>
-      </div>
+      <EmptyState
+        icon="🌿"
+        eyebrow="Plant detail"
+        title="Couldn't find that plant"
+        message={error}
+        action={<Link className="btn btn-outline" to="/plants">Back to catalog</Link>}
+      />
     )
   }
 
   return (
-    <div>
-      <Link to="/plants" className="btn-ghost" style={{ marginBottom: 24, display: 'inline-block' }}>
-        ← Back to catalog
+    <div className="page-fade-in">
+      <Link to="/plants" className="btn btn-outline btn-sm back-link">
+        Back to catalog
       </Link>
 
-      {plant.imageUrl ? (
-        <img src={plant.imageUrl} alt={plant.commonName} className="detail-hero" />
-      ) : (
-        <div className="detail-hero-placeholder">🌿</div>
-      )}
-
-      <div className="detail-card">
-        <div className="plant-tag-type">{plant.typeOfPlant || 'Plant'}</div>
-        <h1>{plant.commonName}</h1>
-        <p className="detail-desc">{plant.plantDescription}</p>
-
-        <div className="detail-specs">
-          <div>
-            <div className="spec-label">Height</div>
-            <div className="spec-value">{plant.plantHeight} cm</div>
-          </div>
-          <div>
-            <div className="spec-label">Spread</div>
-            <div className="spec-value">{plant.plantSpread}</div>
-          </div>
-          <div>
-            <div className="spec-label">Bloom time</div>
-            <div className="spec-value">{plant.bloomTime}</div>
-          </div>
-          <div>
-            <div className="spec-label">Difficulty</div>
-            <div className="spec-value">{plant.difficultyLevel}</div>
-          </div>
-          <div>
-            <div className="spec-label">Ideal temperature</div>
-            <div className="spec-value">{plant.temparature}</div>
-          </div>
-          <div>
-            <div className="spec-label">Medicinal / culinary use</div>
-            <div className="spec-value">{plant.medicinalOrCulinaryUse || '—'}</div>
+      <div className="detail-shell">
+        <div className="detail-media-card">
+          {plant.imageUrl ? (
+            <img src={plant.imageUrl} alt={plant.commonName} className="detail-hero" />
+          ) : (
+            <div className="detail-hero-placeholder">🌿</div>
+          )}
+          <div className="detail-summary-strip">
+            <span className="detail-summary-pill">{plant.typeOfPlant || 'Plant'}</span>
+            <span className={`detail-summary-pill ${plant.plantsStock > 0 ? '' : 'danger'}`}>
+              {plant.plantsStock > 0 ? `${plant.plantsStock} in stock` : 'Out of stock'}
+            </span>
           </div>
         </div>
 
-        <div className="detail-price-row">
-          <div>
-            <div className="spec-label">Price</div>
-            <div className="detail-price">₹{plant.plantCost.toFixed(2)}</div>
-          </div>
-          <div style={{ textAlign: 'right' }}>
-            <div className="spec-label">Stock</div>
-            <div className="spec-value">
-              {plant.plantsStock > 0 ? `${plant.plantsStock} available` : 'Out of stock'}
+        <div className="detail-card">
+          <div className="plant-tag-type">{plant.typeOfPlant || 'Plant'}</div>
+          <h1>{plant.commonName}</h1>
+          <p className="detail-desc">{plant.plantDescription}</p>
+
+          <div className="detail-specs">
+            <div className="detail-spec-card">
+              <div className="spec-label">Height</div>
+              <div className="spec-value">{plant.plantHeight} cm</div>
+            </div>
+            <div className="detail-spec-card">
+              <div className="spec-label">Spread</div>
+              <div className="spec-value">{plant.plantSpread}</div>
+            </div>
+            <div className="detail-spec-card">
+              <div className="spec-label">Bloom time</div>
+              <div className="spec-value">{plant.bloomTime}</div>
+            </div>
+            <div className="detail-spec-card">
+              <div className="spec-label">Difficulty</div>
+              <div className="spec-value">{plant.difficultyLevel}</div>
+            </div>
+            <div className="detail-spec-card">
+              <div className="spec-label">Ideal temperature</div>
+              <div className="spec-value">{plant.temparature}</div>
+            </div>
+            <div className="detail-spec-card">
+              <div className="spec-label">Medicinal / culinary use</div>
+              <div className="spec-value">{plant.medicinalOrCulinaryUse || '-'}</div>
             </div>
           </div>
-        </div>
 
-        {plant.plantsStock > 0 && (
-          <div className="detail-actions">
-            {auth?.role === 'customer' ? (
-              <Link to={`/plants/${plant.plantId}/order`} className="btn btn-primary">
-                Order plant
-              </Link>
-            ) : (
-              <Link to="/login" className="btn btn-primary">
-                Log in to order
-              </Link>
-            )}
+          <div className="detail-price-row">
+            <div>
+              <div className="spec-label">Price</div>
+              <div className="detail-price">₹{plant.plantCost.toFixed(2)}</div>
+            </div>
+            <div className="detail-status-card">
+              <div className="spec-label">Stock</div>
+              <div className="spec-value">
+                {plant.plantsStock > 0 ? `${plant.plantsStock} available` : 'Out of stock'}
+              </div>
+            </div>
           </div>
-        )}
+
+          {plant.plantsStock > 0 && (
+            <div className="detail-actions">
+              {auth?.role === 'customer' ? (
+                <Link to={`/plants/${plant.plantId}/order`} className="btn btn-primary">
+                  Order plant
+                </Link>
+              ) : (
+                <Link to="/login" className="btn btn-primary">
+                  Log in to order
+                </Link>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )

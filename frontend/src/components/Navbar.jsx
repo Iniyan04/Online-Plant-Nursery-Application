@@ -14,7 +14,10 @@ export default function Navbar() {
     <header className="navbar">
       <div className="navbar-inner">
         <NavLink to="/plants" className="brand">
-          Greenroot <span className="brand-mark">Nursery</span>
+          <span className="brand-badge" aria-hidden="true">GN</span>
+          <span className="brand-copy">
+            Greenroot <span className="brand-mark">Nursery</span>
+          </span>
         </NavLink>
 
         <nav className="nav-links">
@@ -61,13 +64,13 @@ export default function Navbar() {
           )}
           {auth?.role === 'customer' && (
             <>
-              <span>Hi, {auth.customer.customerName.split(' ')[0]}</span>
+              <span className="nav-user-chip">Hi, {auth.customer.customerName.split(' ')[0]}</span>
               <button className="btn-ghost" onClick={handleLogout}>Log out</button>
             </>
           )}
           {auth?.role === 'admin' && (
             <>
-              <span>Admin: {auth.admin.username}</span>
+              <span className="nav-user-chip">Admin: {auth.admin.username}</span>
               <button className="btn-ghost" onClick={handleLogout}>Log out</button>
             </>
           )}

@@ -1,9 +1,15 @@
 import { useEffect, useState } from 'react'
 import { deleteCustomer, getCustomers, searchCustomer, updateCustomer } from '../../api/client.js'
+import EmptyState from '../../components/EmptyState.jsx'
+import { TableSkeleton } from '../../components/LoadingBlock.jsx'
 import { useAuth } from '../../context/AuthContext.jsx'
 import CustomerFormModal from '../../components/CustomerFormModal.jsx'
 
 const PAGE_SIZE = 5
+
+function customerInitial(name) {
+  return String(name || '?').trim().charAt(0).toUpperCase() || '?'
+}
 
 export default function ManageCustomers() {
   const { auth } = useAuth()
@@ -128,12 +134,17 @@ export default function ManageCustomers() {
   const pageCustomers = customers.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
 
   return (
-    <div>
-      <h1 className="page-title">Manage customers</h1>
-      <p className="page-sub">Search, review, update, or remove customer records.</p>
+    <div className="page-fade-in admin-page-shell">
+      <div className="admin-header-card">
+        <div>
+          <p className="eyebrow">Customer management</p>
+          <h1 className="page-title">Manage customers</h1>
+          <p className="page-sub">Search, review, update, or remove customer records.</p>
+        </div>
+      </div>
 
-      <form className="toolbar" onSubmit={handleSearch}>
-        <div className="field search-field">
+      <form className="toolbar admin-toolbar" onSubmit={handleSearch}>
+        <div className="field search-field admin-search-field">
           <label htmlFor="customerSearch">Search by username</label>
           <input
             id="customerSearch"
@@ -153,37 +164,42 @@ export default function ManageCustomers() {
       {success && <div className="alert alert-success">{success}</div>}
       {listError && <div className="alert alert-error--dark">{listError}</div>}
 
-      {loading && (
-        <div className="state-block">
-          <p className="page-title">Loading customers...</p>
-        </div>
-      )}
+      {loading && <TableSkeleton rows={5} columns={4} />}
 
       {!loading && !listError && customers.length === 0 && (
-        <div className="state-block">
-          <p className="page-title">No customers found</p>
-          <p>{emptyMessage}</p>
-        </div>
+        <EmptyState
+          icon="Customer"
+          eyebrow="No records"
+          title="No customers found"
+          message={emptyMessage}
+        />
       )}
 
       {!loading && customers.length > 0 && (
         <>
-          <div className="table-wrap">
-            <table className="data-table">
+          <div className="table-wrap admin-table-wrap">
+            <table className="data-table admin-data-table">
               <thead>
                 <tr>
                   <th>Name</th>
                   <th>Email</th>
                   <th>Username</th>
-                  <th></th>
+                  <th />
                 </tr>
               </thead>
               <tbody>
-                {pageCustomers.map((customer) => (
-                  <tr key={customer.customerId}>
-                    <td>{customer.customerName}</td>
+                {pageCustomers.map((customer, index) => (
+                  <tr key={customer.customerId} className={index % 2 === 0 ? 'zebra-row' : ''}>
+                    <td>
+                      <div className="customer-cell">
+                        <span className="customer-avatar" aria-hidden="true">{customerInitial(customer.customerName)}</span>
+                        <div className="admin-row-primary">
+                          <strong>{customer.customerName}</strong>
+                        </div>
+                      </div>
+                    </td>
                     <td>{customer.customerEmail}</td>
-                    <td>{customer.username}</td>
+                    <td><span className="table-badge">{customer.username}</span></td>
                     <td>
                       <div className="row-actions">
                         <button className="btn btn-outline btn-sm" onClick={() => openView(customer)}>
@@ -207,15 +223,17 @@ export default function ManageCustomers() {
             </table>
           </div>
 
-          <div className="pagination-row">
-            <button className="btn btn-outline btn-sm" disabled={page === 1} onClick={() => setPage((p) => p - 1)}>
-              Previous
-            </button>
-            <span>Page {page} of {totalPages}</span>
-            <button className="btn btn-outline btn-sm" disabled={page === totalPages} onClick={() => setPage((p) => p + 1)}>
-              Next
-            </button>
-          </div>
+          {totalPages > 1 && (
+            <div className="pagination-row admin-pagination-row">
+              <button className="btn btn-outline btn-sm" disabled={page === 1} onClick={() => setPage((p) => p - 1)}>
+                Previous
+              </button>
+              <span>Page {page} of {totalPages}</span>
+              <button className="btn btn-outline btn-sm" disabled={page === totalPages} onClick={() => setPage((p) => p + 1)}>
+                Next
+              </button>
+            </div>
+          )}
         </>
       )}
 

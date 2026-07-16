@@ -1,5 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { getSeeds, addSeed, updateSeed, deleteSeed } from '../../api/client.js'
+import EmptyState from '../../components/EmptyState.jsx'
+import { TableSkeleton } from '../../components/LoadingBlock.jsx'
 import { useAuth } from '../../context/AuthContext.jsx'
 import SeedFormModal from '../../components/SeedFormModal.jsx'
 
@@ -8,6 +10,7 @@ export default function ManageSeeds() {
   const [seeds, setSeeds] = useState([])
   const [loading, setLoading] = useState(true)
   const [listError, setListError] = useState('')
+  const [search, setSearch] = useState('')
 
   const [modalMode, setModalMode] = useState(null)
   const [editingSeed, setEditingSeed] = useState(null)
@@ -26,6 +29,16 @@ export default function ManageSeeds() {
   }
 
   useEffect(loadSeeds, [])
+
+  const visibleSeeds = useMemo(() => {
+    const query = search.trim().toLowerCase()
+    if (!query) return seeds
+    return seeds.filter((seed) =>
+      [seed.commonName, seed.typeOfSeeds].some((value) =>
+        String(value || '').toLowerCase().includes(query)
+      )
+    )
+  }, [search, seeds])
 
   function openAdd() {
     setEditingSeed(null)
@@ -76,51 +89,70 @@ export default function ManageSeeds() {
   }
 
   return (
-    <div>
-      <h1 className="page-title">Manage seeds</h1>
-      <p className="page-sub">Add new packets, update details, or retire seeds from the catalog.</p>
-
-      <div className="toolbar">
-        <div />
-        <button className="btn btn-primary" onClick={openAdd}>
+    <div className="page-fade-in admin-page-shell">
+      <div className="admin-header-card">
+        <div>
+          <p className="eyebrow">Catalog management</p>
+          <h1 className="page-title">Manage seeds</h1>
+          <p className="page-sub">Add new packets, update details, or retire seeds from the catalog.</p>
+        </div>
+        <button className="btn btn-primary admin-add-btn" onClick={openAdd}>
           + Add seed
         </button>
       </div>
 
+      <div className="toolbar admin-toolbar">
+        <div className="field search-field admin-search-field">
+          <label htmlFor="seedsTableSearch">Search seeds</label>
+          <input
+            id="seedsTableSearch"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search by common name or type"
+          />
+        </div>
+        <div className="admin-toolbar-note">
+          <span>{visibleSeeds.length}</span>
+          <small>seed records</small>
+        </div>
+      </div>
+
       {listError && <div className="alert alert-error--dark">{listError}</div>}
 
-      {loading && (
-        <div className="state-block">
-          <p className="page-title">Loading seeds…</p>
-        </div>
+      {loading && <TableSkeleton rows={5} columns={5} />}
+
+      {!loading && !listError && visibleSeeds.length === 0 && (
+        <EmptyState
+          icon="Seed"
+          eyebrow="Inventory empty"
+          title="No seeds found"
+          message={search ? 'Try a different search term to find existing seed records.' : 'Add your first seed packet to get the catalog started.'}
+        />
       )}
 
-      {!loading && !listError && seeds.length === 0 && (
-        <div className="state-block">
-          <p className="page-title">No seeds yet</p>
-          <p>Add your first seed packet to get the catalog started.</p>
-        </div>
-      )}
-
-      {!loading && seeds.length > 0 && (
-        <div className="table-wrap">
-          <table className="data-table">
+      {!loading && visibleSeeds.length > 0 && (
+        <div className="table-wrap admin-table-wrap">
+          <table className="data-table admin-data-table">
             <thead>
               <tr>
                 <th>Common name</th>
                 <th>Type</th>
                 <th>Stock</th>
                 <th>Cost</th>
-                <th></th>
+                <th />
               </tr>
             </thead>
             <tbody>
-              {seeds.map((seed) => (
-                <tr key={seed.seedId}>
-                  <td>{seed.commonName}</td>
-                  <td>{seed.typeOfSeeds}</td>
+              {visibleSeeds.map((seed, index) => (
+                <tr key={seed.seedId} className={index % 2 === 0 ? 'zebra-row' : ''}>
+                  <td>
+                    <div className="admin-row-primary">
+                      <strong>{seed.commonName}</strong>
+                    </div>
+                  </td>
+                  <td><span className="table-badge">{seed.typeOfSeeds}</span></td>
                   <td className="num">{seed.seedsStock}</td>
-                  <td className="num">₹{seed.seedsCost.toFixed(2)}</td>
+                  <td className="num">Rs. {seed.seedsCost.toFixed(2)}</td>
                   <td>
                     <div className="row-actions">
                       <button className="btn btn-outline btn-sm" onClick={() => openEdit(seed)}>
@@ -131,7 +163,7 @@ export default function ManageSeeds() {
                         onClick={() => handleDelete(seed)}
                         disabled={deletingId === seed.seedId}
                       >
-                        {deletingId === seed.seedId ? 'Deleting…' : 'Delete'}
+                        {deletingId === seed.seedId ? 'Deleting...' : 'Delete'}
                       </button>
                     </div>
                   </td>

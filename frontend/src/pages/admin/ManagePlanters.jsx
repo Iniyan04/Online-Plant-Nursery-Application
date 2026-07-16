@@ -1,5 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { getPlanters, getPlants, getSeeds, addPlanter, updatePlanter, deletePlanter } from '../../api/client.js'
+import EmptyState from '../../components/EmptyState.jsx'
+import { TableSkeleton } from '../../components/LoadingBlock.jsx'
 import { useAuth } from '../../context/AuthContext.jsx'
 import PlanterFormModal from '../../components/PlanterFormModal.jsx'
 
@@ -10,6 +12,7 @@ export default function ManagePlanters() {
   const [seeds, setSeeds] = useState([])
   const [loading, setLoading] = useState(true)
   const [listError, setListError] = useState('')
+  const [search, setSearch] = useState('')
 
   const [modalMode, setModalMode] = useState(null)
   const [editingPlanter, setEditingPlanter] = useState(null)
@@ -32,6 +35,16 @@ export default function ManagePlanters() {
   }
 
   useEffect(loadPlanters, [])
+
+  const visiblePlanters = useMemo(() => {
+    const query = search.trim().toLowerCase()
+    if (!query) return planters
+    return planters.filter((planter) =>
+      [planter.planterShape, `${planter.planterCapacity} L`].some((value) =>
+        String(value || '').toLowerCase().includes(query)
+      )
+    )
+  }, [planters, search])
 
   function openAdd() {
     setEditingPlanter(null)
@@ -82,51 +95,70 @@ export default function ManagePlanters() {
   }
 
   return (
-    <div>
-      <h1 className="page-title">Manage planters</h1>
-      <p className="page-sub">Add new pots, update details, or retire planters from the catalog.</p>
-
-      <div className="toolbar">
-        <div />
-        <button className="btn btn-primary" onClick={openAdd}>
+    <div className="page-fade-in admin-page-shell">
+      <div className="admin-header-card">
+        <div>
+          <p className="eyebrow">Catalog management</p>
+          <h1 className="page-title">Manage planters</h1>
+          <p className="page-sub">Add new pots, update details, or retire planters from the catalog.</p>
+        </div>
+        <button className="btn btn-primary admin-add-btn" onClick={openAdd}>
           + Add planter
         </button>
       </div>
 
+      <div className="toolbar admin-toolbar">
+        <div className="field search-field admin-search-field">
+          <label htmlFor="plantersTableSearch">Search planters</label>
+          <input
+            id="plantersTableSearch"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search by shape or capacity"
+          />
+        </div>
+        <div className="admin-toolbar-note">
+          <span>{visiblePlanters.length}</span>
+          <small>planter records</small>
+        </div>
+      </div>
+
       {listError && <div className="alert alert-error--dark">{listError}</div>}
 
-      {loading && (
-        <div className="state-block">
-          <p className="page-title">Loading planters…</p>
-        </div>
+      {loading && <TableSkeleton rows={5} columns={5} />}
+
+      {!loading && !listError && visiblePlanters.length === 0 && (
+        <EmptyState
+          icon="Planter"
+          eyebrow="Inventory empty"
+          title="No planters found"
+          message={search ? 'Try a different search term to find existing planter records.' : 'Add your first planter to get the catalog started.'}
+        />
       )}
 
-      {!loading && !listError && planters.length === 0 && (
-        <div className="state-block">
-          <p className="page-title">No planters yet</p>
-          <p>Add your first planter to get the catalog started.</p>
-        </div>
-      )}
-
-      {!loading && planters.length > 0 && (
-        <div className="table-wrap">
-          <table className="data-table">
+      {!loading && visiblePlanters.length > 0 && (
+        <div className="table-wrap admin-table-wrap">
+          <table className="data-table admin-data-table">
             <thead>
               <tr>
                 <th>Shape</th>
                 <th>Capacity</th>
                 <th>Stock</th>
                 <th>Cost</th>
-                <th></th>
+                <th />
               </tr>
             </thead>
             <tbody>
-              {planters.map((planter) => (
-                <tr key={planter.planterId}>
-                  <td>{planter.planterShape}</td>
+              {visiblePlanters.map((planter, index) => (
+                <tr key={planter.planterId} className={index % 2 === 0 ? 'zebra-row' : ''}>
+                  <td>
+                    <div className="admin-row-primary">
+                      <strong>{planter.planterShape}</strong>
+                    </div>
+                  </td>
                   <td>{planter.planterCapacity} L</td>
                   <td className="num">{planter.planterStock}</td>
-                  <td className="num">₹{planter.planterCost}</td>
+                  <td className="num">Rs. {Number(planter.planterCost).toFixed(2)}</td>
                   <td>
                     <div className="row-actions">
                       <button className="btn btn-outline btn-sm" onClick={() => openEdit(planter)}>
@@ -137,7 +169,7 @@ export default function ManagePlanters() {
                         onClick={() => handleDelete(planter)}
                         disabled={deletingId === planter.planterId}
                       >
-                        {deletingId === planter.planterId ? 'Deleting…' : 'Delete'}
+                        {deletingId === planter.planterId ? 'Deleting...' : 'Delete'}
                       </button>
                     </div>
                   </td>

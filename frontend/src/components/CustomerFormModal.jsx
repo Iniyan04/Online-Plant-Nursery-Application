@@ -15,9 +15,12 @@ export default function CustomerFormModal({ mode, customer, onSave, onClose, sav
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+      <div className="modal-card modal-card-premium" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>{readonly ? 'Customer details' : `Edit ${customer.customerName}`}</h2>
+          <div>
+            <span className="modal-icon-badge" aria-hidden="true">C</span>
+            <h2>{readonly ? 'Customer details' : `Edit ${customer.customerName}`}</h2>
+          </div>
           <button className="modal-close" onClick={onClose} aria-label="Close">
             x
           </button>
@@ -26,6 +29,7 @@ export default function CustomerFormModal({ mode, customer, onSave, onClose, sav
         {error && <div className="alert alert-error">{error}</div>}
 
         <form onSubmit={handleSubmit} noValidate>
+          <div className="modal-section-title">Customer information</div>
           <div className="field">
             <label htmlFor="customerName">Name</label>
             <input id="customerName" value={form.customerName} onChange={update('customerName')} readOnly={readonly} required />
