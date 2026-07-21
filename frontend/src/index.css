@@ -3111,5 +3111,10 @@ body::before {
   transition: background 0.15s ease;
 }
 
+select option {
+  background-color: #ffffff;
+  color: #1c2a20;
+}
+
 .chatbot-send:hover { background: var(--fern-bright); }
 .chatbot-send:disabled { opacity: 0.4; cursor: not-allowed; }
